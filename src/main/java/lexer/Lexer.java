@@ -7,13 +7,13 @@ import static lexer.TOKEN.*;
 
 public class Lexer {
 
+    private final int length;
     String expr;
     int index;
     double number;
     Supplier<Character> ch = () -> this.expr.charAt(this.index);
     String quotedString;
     String variableName;
-    private final int length;
     private Integer lineNumber;
 
 
@@ -117,6 +117,16 @@ public class Lexer {
                     index++;
                     tok = LE;
                 }
+            }
+
+            case '>' -> {
+                tok = GT;
+                index++;
+                if (ch.get() == '=') {
+                    index++;
+                    tok = GE;
+                }
+
             }
 
             case ':' -> {
