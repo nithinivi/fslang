@@ -236,7 +236,6 @@ public class Lexer {
 
     }
 
-
     protected String getVariableName() {
         return variableName;
     }
@@ -252,4 +251,10 @@ public class Lexer {
     public Integer getLineNumber() {
         return lineNumber;
     }
+
+
+    protected String getNonParsedExp() {
+        return expr.substring(index);
+    }
+
 }

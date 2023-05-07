@@ -169,15 +169,56 @@ public class Parser extends Lexer {
         return e;
     }
 
-    private Expression parseFunctionParameter() {
+
+    private void checkTokenAndThrowError(TOKEN token, String s) throws Exception {
+        if (this.token != token)
+            error(s);
     }
 
-    private Expression parseParameterDeclarations() {
+    private void error(String m) throws Exception {
+        throw new Exception("error: " + m + "\tline no:" + getLineNumber() + "\t token:" + this.token + "\n program left to parse:\n" + getNonParsedExp());
     }
 
-    private void checkTokenAndThrowError(TOKEN token, String s) {
+    private Expression parseFunctionParameter() throws Exception {
+        Expression functionParameter = null;
+        if (token == WORD)
+            functionParameter = new Ident(getVariableName());
+        else if (token == EMPTY)
+            functionParameter = new EmptyCon();
+        else
+            error("f param");
+        return functionParameter;
     }
 
-    private void error(String message) {
+    private Expression parseParameterDeclarations() throws Exception {
+        Boolean isRec = isToken(REC);
+        if (Boolean.TRUE.equals(isRec))
+            parseToken();
+
+        Expression pDecs = parseParameterDeclarations(isRec);
+        if (isToken(IN))
+            parseToken();
+
+        checkTokenAndThrowError(IN, "in is expected");
+        parseToken();
+        return new Block(pDecs, parseExpression());
     }
+
+    private Expression parseParameterDeclarations(Boolean isRec) throws Exception {
+        Expression d = parseParameterDeclarations();
+        if (isToken(COMMA)) {
+            parseToken();
+            return contractParameterDeclarationList(isRec, d, parseParameterDeclarations(isRec));
+        } else
+            return contractParameterDeclarationList(isRec, d, null);
+    }
+
+    private Expression contractParameterDeclarationList(Boolean isRec, Expression h, Expression t) {
+        return new DecList(isRec, h, t);
+    }
+
+    private Boolean isToken(TOKEN s) {
+        return s == token;
+    }
+
 }
