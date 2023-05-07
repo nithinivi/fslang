@@ -4,13 +4,14 @@ import java.util.function.Supplier;
 
 import static lexer.TOKEN.*;
 
+
 public class Lexer {
 
     String expr;
     int index;
     double number;
     Supplier<Character> ch = () -> this.expr.charAt(this.index);
-    String qouteString;
+    String quotedString;
     String variableName;
     private final int length;
     private Integer lineNumber;
@@ -60,69 +61,69 @@ public class Lexer {
             }
             case '+' -> {
                 index++;
-                tok = TOKEN.PLUS;
+                tok = PLUS;
             }
             case '-' -> {
-                tok = TOKEN.MINUS;
+                tok = MINUS;
                 index++;
             }
             case '*' -> {
-                tok = TOKEN.MUL;
+                tok = MUL;
                 index++;
             }
             case '/' -> {
-                tok = TOKEN.DIV;
+                tok = DIV;
                 index++;
             }
             case '(' -> {
-                tok = TOKEN.OPREN;
+                tok = OPREN;
                 if (ch.get() == ')') {
                     index++;
-                    tok = TOKEN.EMPTY;
+                    tok = EMPTY;
                 }
             }
             case ')' -> {
                 index++;
-                tok = TOKEN.CPREN;
+                tok = CPREN;
             }
             case '[' -> {
                 index++;
-                tok = TOKEN.SQ_OPEN;
+                tok = SQ_OPEN;
             }
             case ']' -> {
                 index++;
-                tok = TOKEN.SQ_CLOSE;
+                tok = SQ_CLOSE;
             }
 
             case '.' -> {
                 index++;
-                tok = TOKEN.DOT;
+                tok = DOT;
             }
             case '"' -> {
                 index++;
-                tok = TOKEN.QUOTE;
+                tok = QUOTE;
             }
             case '=' -> {
                 index++;
-                tok = TOKEN.EQ;
+                tok = EQ;
             }
 
             case '<' -> {
-                tok = TOKEN.LT;
+                tok = LT;
                 if (ch.get() == '>') {
                     index++;
-                    tok = TOKEN.NE;
+                    tok = NE;
                 } else if (ch.get() == '=') {
                     index++;
-                    tok = TOKEN.LE;
+                    tok = LE;
                 }
             }
 
             case ':' -> {
-                tok = TOKEN.COLON;
+                tok = COLON;
                 if (expr.charAt(index++) == ':') {
                     index += 2;
-                    tok = TOKEN.CONS;
+                    tok = CONS;
                 }
             }
 
@@ -130,7 +131,7 @@ public class Lexer {
 
             case '\'' -> {
                 parseCharacterLiteral();
-                tok = TOKEN.CHAR_LITERAL;
+                tok = CHAR_LITERAL;
             }
 
             default -> {
@@ -159,7 +160,7 @@ public class Lexer {
         }
 
         this.number = Double.parseDouble(bld.toString());
-        return TOKEN.NUMERAL;
+        return NUMERAL;
     }
 
     private TOKEN getKeyWordSymbol() {
@@ -212,15 +213,15 @@ public class Lexer {
             }
         }
 
-        qouteString = bld.toString();
+        quotedString = bld.toString();
 
 
         if (quoteCount != 2)
             throw new Exception("Quoted string ended");
 
 
-        if (qouteString.length() != 1)
-            throw new Exception("Quoted string should be 1, got \"+ t" + qouteString.length());
+        if (quotedString.length() != 1)
+            throw new Exception("Quoted string should be 1, got \"+ t" + quotedString.length());
 
 
     }
@@ -230,11 +231,15 @@ public class Lexer {
         return variableName;
     }
 
-    String getQoutedString() {
-        return qouteString;
+    String getQuotedString() {
+        return quotedString;
     }
 
     double getNumber() {
         return number;
+    }
+
+    public Integer getLineNumber() {
+        return lineNumber;
     }
 }
