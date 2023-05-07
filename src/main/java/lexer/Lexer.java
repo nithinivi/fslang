@@ -237,15 +237,15 @@ public class Lexer {
     }
 
 
-    String getVariableName() {
+    protected String getVariableName() {
         return variableName;
     }
 
-    String getQuotedString() {
+    protected String getQuotedString() {
         return quotedString;
     }
 
-    double getNumber() {
+    protected double getNumber() {
         return number;
     }
 
