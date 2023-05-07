@@ -1,0 +1,14 @@
+package lexer;
+
+public enum TOKEN {
+    EOF, NIL,
+    IN, LET, FALSE, TRUE,
+    IF, THEN, ELSE, LAMBDA,
+    OR, AND, NULL, HD, TL,
+    REC, COMMA,MUL, DIV, PLUS,
+    MINUS, OPREN, EMPTY,
+    CPREN, SQ_OPEN, SQ_CLOSE, DOT,
+    QUOTE, EQ, LT, NE, LE,
+    COLON, CONS, CHAR_LITERAL,
+    WORD, NUMERAL;
+}
