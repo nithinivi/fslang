@@ -1,10 +1,10 @@
 package ast;
 
-public class DecIn extends Expression {
+public class Decln extends Expression {
     private final String name;
     private final Expression val;
 
-    public DecIn(String name, Expression val) {
+    public Decln(String name, Expression val) {
         this.name = name;
         this.val = val;
     }

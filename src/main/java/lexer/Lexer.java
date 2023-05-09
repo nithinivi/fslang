@@ -163,10 +163,10 @@ public class Lexer {
 
     private TOKEN getDoubleFromString() {
 
-        var bld = new StringBuilder();
+        var bld = new StringBuilder("");
         while (index < length && Character.isDigit(ch.get())) {
-            index++;
             bld.append(ch.get());
+            index++;
         }
 
         this.number = Double.parseDouble(bld.toString());

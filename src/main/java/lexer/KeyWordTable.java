@@ -33,7 +33,7 @@ class KeyWordTable {
     public static int keywordMatchCount(String inputKeyword) {
         int count = 0;
         for (var keyword : keyWordNames) {
-            if (keyword.startsWith(inputKeyword))
+            if (!keyword.equals("") && keyword.startsWith(inputKeyword))
                 count++;
         }
         return count;

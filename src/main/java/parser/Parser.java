@@ -56,6 +56,7 @@ public class Parser extends Lexer {
 
 
     public Expression parseProgram() throws Exception {
+        parseToken();
         return parseExpression();
     }
 
@@ -93,6 +94,7 @@ public class Parser extends Lexer {
             parseToken();
             e = new UnaryExpression(unaryOperator, parseExp(priority));
         } else if (startExp.contains(token)) {
+
             switch (token) {
                 case WORD -> {
                     e = new Ident(getVariableName());
@@ -179,6 +181,48 @@ public class Parser extends Lexer {
         throw new Exception("error: " + m + "\tline no:" + getLineNumber() + "\t token:" + this.token + "\n program left to parse:\n" + getNonParsedExp());
     }
 
+    private Expression parseParameterDeclarations() throws Exception {
+        Boolean isRec = isToken(REC);
+        if (Boolean.TRUE.equals(isRec))
+            parseToken();
+
+        Expression pDecs = parseParameterDeclarationList(isRec);
+        if (!isToken(IN))
+            parseToken();
+
+        checkTokenAndThrowError(IN, "in is expected");
+        parseToken();
+        return new Block(pDecs, parseExpression());
+    }
+
+    private Expression parseParameterDeclarationList(Boolean isRec) throws Exception {
+        Expression d = parameterDeclaration();
+        if (isToken(COMMA)) {
+            parseToken();
+            return contractParameterDeclarationList(isRec, d, parseParameterDeclarationList(isRec));
+        } else
+            return contractParameterDeclarationList(isRec, d, null);
+    }
+
+    private Expression contractParameterDeclarationList(boolean isRec, Expression h, Expression t) {
+        return new DecList(isRec, h, t);
+    }
+
+    private boolean isToken(TOKEN s) {
+        return s == token;
+    }
+
+    private Expression parameterDeclaration() throws  Exception{
+        if (token != WORD)
+            error("dec, no id");
+        String name = getVariableName();
+        parseToken();
+        checkTokenAndThrowError(EQ, " = expected");
+        parseToken();
+        return new Decln(name, parseExpression());
+
+    }
+
     private Expression parseFunctionParameter() throws Exception {
         Expression functionParameter = null;
         if (token == WORD)
@@ -188,37 +232,6 @@ public class Parser extends Lexer {
         else
             error("f param");
         return functionParameter;
-    }
-
-    private Expression parseParameterDeclarations() throws Exception {
-        Boolean isRec = isToken(REC);
-        if (Boolean.TRUE.equals(isRec))
-            parseToken();
-
-        Expression pDecs = parseParameterDeclarations(isRec);
-        if (isToken(IN))
-            parseToken();
-
-        checkTokenAndThrowError(IN, "in is expected");
-        parseToken();
-        return new Block(pDecs, parseExpression());
-    }
-
-    private Expression parseParameterDeclarations(Boolean isRec) throws Exception {
-        Expression d = parseParameterDeclarations();
-        if (isToken(COMMA)) {
-            parseToken();
-            return contractParameterDeclarationList(isRec, d, parseParameterDeclarations(isRec));
-        } else
-            return contractParameterDeclarationList(isRec, d, null);
-    }
-
-    private Expression contractParameterDeclarationList(Boolean isRec, Expression h, Expression t) {
-        return new DecList(isRec, h, t);
-    }
-
-    private Boolean isToken(TOKEN s) {
-        return s == token;
     }
 
 }
