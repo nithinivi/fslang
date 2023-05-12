@@ -21,6 +21,7 @@ class KeyWordTable {
         put("null", TOKEN.NULL);
         put("hd", TOKEN.HD);
         put("tl", TOKEN.TL);
+        put("tl", TOKEN.NOT);
         put("rec", TOKEN.REC);
     }};
     private static final Set<String> keyWordNames = keyWords.keySet();
