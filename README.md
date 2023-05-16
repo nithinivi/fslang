@@ -1,4 +1,4 @@
-# fslang
+# Fslang
 
 #  Brief Intro to Lambda Calculus with python
 
