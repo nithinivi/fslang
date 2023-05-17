@@ -51,11 +51,12 @@ public class Executor {
         }
     }
 
-    private void force(Value v) throws Exception {
+    private Value force(Value v) throws Exception {
         if (v.type().equals(ValueType.Deferred)) {
             Value v2 = eval(v.getExp(), v.getEnv());
             v.setValue(v2);
         }
+        return v;
     }
 
     private Value applyEnv(Env env, String id) throws Exception {
@@ -71,7 +72,7 @@ public class Executor {
 
     private Value eval(Expression exp, Env env) throws Exception {
 
-        Predicate<Object> isClass = r -> env.getClass().equals(r);
+        Predicate<Object> isClass = r -> exp.getClass().equals(r);
 
         if (isClass.test(Ident.class))
             return applyEnv(env, ((Ident) exp).id());
@@ -90,12 +91,13 @@ public class Executor {
 
         else if (isClass.test(EmptyCon.class))
             return new Value(ValueType.Empty);
-
         else if (isClass.test(LambdaExp.class)) {
+            return new Value(ValueType.Function, exp, env);
+        } else if (isClass.test(Application.class)) {
             Value func = eval(((Application) exp).fun(), env);
 
             if (func.type().equals(ValueType.Function))
-                apply(func, defer((Application) exp, env));
+                return apply(func, defer(((Application) exp).aparm(), env));
             else
                 throw new Exception("apply ~fn ");
 
@@ -108,16 +110,17 @@ public class Executor {
 
             var binaryExp = (BinaryExpression) exp;
             if (binaryExp.operator().equals(CONS))  //cons should not eval params
-                return evalExpr(binaryExp.operator(),
+                return evalBinary(
+                        binaryExp.operator(),
                         defer(binaryExp.left(), env),
-                        defer(binaryExp.right(), env),
-                        env);
+                        defer(binaryExp.right(), env)
+                );
             else
-                return evalExpr(
+                return evalBinary(
                         binaryExp.operator(),
                         eval(binaryExp.left(), env),
-                        eval(binaryExp.right(), env),
-                        env);
+                        eval(binaryExp.right(), env)
+                );
 
         } else if (isClass.test(IfExp.class)) {
 
@@ -145,7 +148,6 @@ public class Executor {
             throw new Exception("Invalid Expression type: " + exp.getClass());
 
 
-        return null;
     }
 
     private Env evalDecs(Expression decs, Env env) {
@@ -175,7 +177,7 @@ public class Executor {
         }
     }
 
-    private Value evalExpr(TOKEN operator, Value left, Value right, Env env) throws Exception {
+    private Value evalBinary(TOKEN operator, Value left, Value right) throws Exception {
         switch (operator) {
             case EQ -> new Value(abs(left) == abs(right));
             case NE -> new Value(abs(left) != abs(right));
@@ -184,8 +186,9 @@ public class Executor {
             case LE -> new Value(abs(left) <= abs(right));
             case GE -> new Value(abs(left) >= abs(right));
             case PLUS, MINUS, MUL, DIV -> {
-                if (left.type().equals(ValueType.Number) && right.type.equals(ValueType.Number))
+                if (!(left.type().equals(ValueType.Number) && right.type.equals(ValueType.Number)))
                     throw new Exception("arith opr ");
+
                 var l = left.number();
                 var r = right.number();
                 switch (operator) {
@@ -237,6 +240,7 @@ public class Executor {
         else
             throw new Exception("rel ops   : " + operand);
     }
+
 
     private Value evalUnary(TOKEN operator, Value value) throws Exception {
         Predicate<ValueType> isValueType = r -> value.type().equals(r);

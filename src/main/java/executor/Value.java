@@ -20,14 +20,17 @@ public final class Value {
 
     public Value(double number) {
         this.n = number;
+        this.type= ValueType.Number;
     }
 
     public Value(Boolean aBoolean) {
         this.b = aBoolean;
+        this.type = ValueType.Boolean;
     }
 
     public Value(Character c) {
         this.ch = c;
+        this.type = ValueType.Character;
     }
 
     public Value(ValueType valueType) {
