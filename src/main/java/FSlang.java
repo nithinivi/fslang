@@ -2,11 +2,20 @@ import ast.Expression;
 import executor.Executor;
 import parser.Parser;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 public class FSlang {
 
     public static void main(String[] args) throws Exception {
-        System.out.println("Functional Slang");
-        var x = new Parser("let add = lambda x.lambda y.x+y in add 2 3");
+        var f = new FSlang();
+        f.run("ex1.txt");
+    }
+
+    public void run(String path) throws Exception {
+        String code = Files.readString(Path.of(path));
+
+        var x = new Parser(code);
         Expression expression = x.parseProgram();
         Executor e = new Executor();
         e.execute(expression);
