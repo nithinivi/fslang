@@ -1,5 +1,10 @@
 # Fslang
 
+FSlang is a lambda calculus interpreter written in java. 
+It is a port of lazy lambda calulus interpreter written by L. Allison of Monash University  and 
+Sinan https://github.com/sinsinan/fslang.
+Full article about the same is available at https://users.monash.edu.au/~lloyd/tildeFP/Lambda
+
 
 ```
 program ::= exp
